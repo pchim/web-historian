@@ -34,14 +34,19 @@ exports.readListOfUrls = cb => {
 };
 
 // take in a callback to act on a boolean indicating presence of url
-exports.isUrlInList = function(url, cb) {
+exports.isUrlInList = (url, cb) => {
   // check if a url is in our list of urls
   this.readListOfUrls(urls => {
     cb(urls.indexOf(url) !== -1);
   });
 };
 
-exports.addUrlToList = function() {
+// add a url to the list, then call a callback
+exports.addUrlToList = function(url, cb) {
+  fs.appendFile(this.paths.list, url, 'utf8', err => { 
+    if (err) { throw err; } 
+    cb();
+  });
 };
 
 exports.isUrlArchived = function() {
