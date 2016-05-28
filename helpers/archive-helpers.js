@@ -16,16 +16,15 @@ exports.paths = {
 };
 
 // Used for stubbing paths for tests, do not modify
-exports.initialize = function(pathsObj) {
-  _.each(pathsObj, function(path, type) {
+exports.initialize = pathsObj => {
+  _.each(pathsObj, (path, type) => {
     exports.paths[type] = path;
   });
 };
 
-// The following function names are provided to you to suggest how you might
-// modularize your code. Keep it clean!
-
-exports.readListOfUrls = function(cb) {
+// take in a callback to act on array of urls
+exports.readListOfUrls = cb => {
+  // read from a list in a file, getting an array of urls
   fs.readFile(this.paths.list, 'utf8', (err, data) => {
     if (err) { throw err; }
     data = data.split('\n');
@@ -34,7 +33,12 @@ exports.readListOfUrls = function(cb) {
   });
 };
 
-exports.isUrlInList = function() {
+// take in a callback to act on a boolean indicating presence of url
+exports.isUrlInList = function(url, cb) {
+  // check if a url is in our list of urls
+  this.readListOfUrls(urls => {
+    cb(urls.indexOf(url) !== -1);
+  });
 };
 
 exports.addUrlToList = function() {
