@@ -42,14 +42,16 @@ exports.isUrlInList = (url, cb) => {
 };
 
 // add a url to the list, then call a callback
-exports.addUrlToList = function(url, cb) {
+exports.addUrlToList = (url, cb) => {
   fs.appendFile(this.paths.list, url, 'utf8', err => { 
     if (err) { throw err; } 
     cb();
   });
 };
 
-exports.isUrlArchived = function() {
+// check whether url is archived, and call callback on that boolean check
+exports.isUrlArchived = (url, cb) => {
+  fs.exists(this.archivedSites + '/' + url, exists => cb(exists));
 };
 
 exports.downloadUrls = function() {
