@@ -30,6 +30,28 @@ const reqOptions = (req, res, method) => {
           res.end(data);
         }
       });
+    },
+    'POST': () => {
+      console.log('posting to sites...', req.url);
+
+      // get the data
+      let dataBody = '';
+      req.on('data', data => {
+        dataBody += data;
+      });
+
+      // modify the data url and take action on it
+      req.on('end', (err) => {
+        dataBody = dataBody.replace('url=', '');
+        console.log('After data body ', dataBody.toString());
+        // append the url to end of file
+        fs.appendFile(archive.paths.list, dataBody + '\n', 'utf8', err => {
+          if (err) { throw err; }
+          res.statusCode = 302;
+          res.end();
+        });
+      });
+
     }
   };
 
