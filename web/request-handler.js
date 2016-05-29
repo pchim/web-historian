@@ -2,6 +2,7 @@ var path = require('path');
 var archive = require('../helpers/archive-helpers');
 // require more modules/folders here!
 var fs = require('fs');
+var httpHelper = require('./http-helpers.js');
 
 const reqOptions = (req, res, method) => {
 
@@ -18,30 +19,19 @@ const reqOptions = (req, res, method) => {
         filePath = archive.paths.archivedSites + req.url;
       }
 
-      // read data in from file
-      fs.readFile(filePath, 'utf8', (err, data) => {
-        console.log('reading data');
-        if (err) {
-          res.statusCode = 404;
-          res.end();
-        } else {
-          res.write(data);
-          res.statusCode = 200;
-          res.end(data);
-        }
-      });
+      // serve up assets
+      httpHelper.serveAssets(res, filePath);
+
     },
     'POST': () => {
       console.log('posting to sites...', req.url);
 
       // get the data
       let dataBody = '';
-      req.on('data', data => {
-        dataBody += data;
-      });
+      req.on('data', data => dataBody += data );
 
       // modify the data url and take action on it
-      req.on('end', (err) => {
+      req.on('end', err => {
         dataBody = dataBody.replace('url=', '');
         console.log('After data body ', dataBody.toString());
         // append the url to end of file
