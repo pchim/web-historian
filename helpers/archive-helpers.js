@@ -58,16 +58,20 @@ exports.isUrlArchived = (url, cb) => {
 // download urls from array
 exports.downloadUrls = urlArray => {
   _.each( urlArray, url => {
-    http.get('http://' + url, res => {
-      console.log('downloaded: ', url);
-      var body = '';
-      res.on('data', chunk => body += chunk)
-        .on('end', err => {
-          fs.writeFile(this.paths.archivedSites + '/' + url, body, 'utf8', err => {
-            if (err) { throw err; }
-            console.log('file written successfully!');
-          });
+    this.isUrlArchived(url, archived => {
+      if (!archived) {
+        http.get('http://' + url, res => {
+          console.log('downloaded: ', url);
+          var body = '';
+          res.on('data', chunk => body += chunk)
+            .on('end', err => {
+              fs.writeFile(this.paths.archivedSites + '/' + url, body, 'utf8', err => {
+                if (err) { throw err; }
+                console.log('file written successfully!');
+              });
+            });
         });
+      }
     });
   });
 };
