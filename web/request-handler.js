@@ -32,6 +32,7 @@ const reqOptions = (req, res, method) => {
       // modify the data url and take action on it
       req.on('end', err => {
         dataBody = dataBody.replace('url=', '');
+        console.log('url: ', dataBody);
         httpHelper.checkLink(req, res, dataBody);
       });
 

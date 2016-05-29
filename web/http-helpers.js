@@ -32,8 +32,6 @@ exports.serveAssets = (res, asset, callback) => {
   });
 };
 
-
-
 // As you progress, keep thinking about what helper functions you can put here!
 exports.directLinks = (req, res, url) => {
   archive.isUrlArchived(url, exists => {

@@ -52,26 +52,30 @@ exports.addUrlToList = (url, cb) => {
 
 // check whether url is archived, and call callback on that boolean check
 exports.isUrlArchived = (url, cb) => {
-  fs.exists(this.archivedSites + '/' + url, exists => cb(exists));
+  fs.exists(this.paths.archivedSites + '/' + url, exists => cb(exists));
 };
 
 // download urls from array
 exports.downloadUrls = urlArray => {
   _.each( urlArray, url => {
-    this.isUrlArchived(url, archived => {
-      if (!archived) {
-        http.get('http://' + url, res => {
-          console.log('downloaded: ', url);
-          var body = '';
-          res.on('data', chunk => body += chunk)
-            .on('end', err => {
-              fs.writeFile(this.paths.archivedSites + '/' + url, body, 'utf8', err => {
-                if (err) { throw err; }
-                console.log('file written successfully!');
+    console.log('attempting to dl: ', url);
+    if (url) {
+      this.isUrlArchived(url, archived => {
+        if (!archived) {
+          http.get('http://' + url, res => {
+            var body = '';
+            res.on('data', chunk => body += chunk)
+              .on('end', err => {
+                fs.writeFile(this.paths.archivedSites + '/' + url, body, 'utf8', err => {
+                  if (err) { throw err; }
+                  console.log('file written successfully! ', url);
+                });
               });
-            });
-        });
-      }
-    });
+          }).on('error', e => {
+            console.log('Error: ', e.message);
+          });
+        }
+      });
+    }
   });
 };
