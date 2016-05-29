@@ -15,12 +15,11 @@ const reqOptions = (req, res, method) => {
       var filePath;
       if (req.url === '/') {
         filePath = archive.paths.siteAssets + '/index.html';
+        httpHelper.serveAssets(res, filePath);
       } else {
-        filePath = archive.paths.archivedSites + req.url;
+        // decide what to do based in the link provided
+        httpHelper.directLinks(req, res, req.url.substring(1));
       }
-
-      // serve up assets
-      httpHelper.serveAssets(res, filePath);
 
     },
     'POST': () => {
@@ -33,13 +32,7 @@ const reqOptions = (req, res, method) => {
       // modify the data url and take action on it
       req.on('end', err => {
         dataBody = dataBody.replace('url=', '');
-        console.log('After data body ', dataBody.toString());
-        // append the url to end of file
-        fs.appendFile(archive.paths.list, dataBody + '\n', 'utf8', err => {
-          if (err) { throw err; }
-          res.statusCode = 302;
-          res.end();
-        });
+        httpHelper.checkLink(req, res, dataBody);
       });
 
     }

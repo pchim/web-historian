@@ -2,6 +2,9 @@ var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 
+var mainScreen = archive.paths.siteAssets + '/index.html';
+var loadingScreen = archive.paths.siteAssets + '/loading.html';
+
 exports.headers = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -32,3 +35,26 @@ exports.serveAssets = (res, asset, callback) => {
 
 
 // As you progress, keep thinking about what helper functions you can put here!
+exports.directLinks = (req, res, url) => {
+  archive.isUrlArchived(url, exists => {
+    let redirect = archive.paths.archivedSites + '/' + url;
+    if (!exists) {
+      if (req.method === 'POST') { redirect = loadingScreen; }
+    }
+    this.serveAssets(res, redirect); 
+  });
+};
+
+exports.checkLink = (req, res, url) => {
+  archive.isUrlInList(url, exists => {
+    if (!exists) {
+      archive.addUrlToList(url, () => {
+        console.log('url added to list');
+        res.statusCode = 302;
+        this.serveAssets(res, loadingScreen);
+      });
+    } else {
+      this.directLinks(req, res, url);
+    }
+  });
+};

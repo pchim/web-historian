@@ -44,7 +44,7 @@ exports.isUrlInList = (url, cb) => {
 
 // add a url to the list, then call a callback
 exports.addUrlToList = (url, cb) => {
-  fs.appendFile(this.paths.list, url, 'utf8', err => { 
+  fs.appendFile(this.paths.list, url + '\n', 'utf8', err => { 
     if (err) { throw err; } 
     cb();
   });
@@ -57,7 +57,7 @@ exports.isUrlArchived = (url, cb) => {
 
 // download urls from array
 exports.downloadUrls = urlArray => {
-  _.each(urlArray, url => {
+  _.each( urlArray, url => {
     http.get('http://' + url, res => {
       console.log('downloaded: ', url);
       var body = '';
